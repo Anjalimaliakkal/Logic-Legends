@@ -152,15 +152,24 @@ app.post("/AddAwarenessIdeas", (req, res) => {
 })
 
 //viewall awareness ideas
-app.get("/ViewAllAwarenessIdeas", (req, res) => {
-    awarenessModel.find().then(
-        (data) => {
-            res.json(data)
-        }
-    ).catch((error) => {
-        res.json(error)
-    })
-})
+app.get("/ViewAllAwarenessIdeas", async (req, res) => {
+    try {
+        // Fetch all ideas from the database
+        const ideas = await awarenessModel.find();
+
+        // Respond with a success message and the fetched data
+        res.status(200).json({
+            message: "Awareness ideas retrieved successfully",
+            ideas: ideas,
+        });
+    } catch (error) {
+        // Handle errors and respond with an appropriate message
+        res.status(500).json({
+            message: "An error occurred while retrieving awareness ideas",
+            error: error.message,
+        });
+    }
+});
 
 //add feedback
 app.post("/AddFeedback", (req, res) => {
