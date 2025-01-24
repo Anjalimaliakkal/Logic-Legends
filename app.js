@@ -108,7 +108,7 @@ app.post("/viewusers", (req, res) => {
             res.json({ "status": "unauthorized access" })
         } else {
             if (decoded) {
-                ksrtcsmodel.find().then(
+                userModel.find().then(
                     (response) => {
                         res.json(response)
                     }
