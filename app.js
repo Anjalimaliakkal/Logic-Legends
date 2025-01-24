@@ -131,7 +131,7 @@ app.post("/AddCampaign", (req, res) => {
 //search campaign
 app.post("/searchCampaign", (req, res) => {
     let input = req.body
-    driversmodel.find(input).then(
+    campaignModel.find(input).then(
         (data) => {
             res.json(data)
         }
