@@ -29,32 +29,40 @@ app.post("/adminSignup", (req, res) => {
 
 })
 
-//admin signin
-
 app.post("/adminSignin", (req, res) => {
-    let input = req.body
-    let result = adminModel.find({ username: input.username }).then(
-        (response) => {
-            if (response.length > 0) {
-                const validator = bcrypt.compareSync(input.password, response[0].password)
-                if (validator) {
-                    jwt.sign({ email: input.username }, "Eco-Cup", { expiresIn: "7d" },
-                        (error, token) => {
-                            if (error) {
-                                res.json({ "status": "token creation failed" })
-                            } else {
-                                res.json({ "status": "success", "token": token })
-                            }
-                        })
+    let input = req.body;
+  
+    // Make sure we search by email, not username
+    adminModel.findOne({ email: input.email }).then(
+      (response) => {
+        if (response) {
+          // Compare the hashed password with the entered password
+          const validator = bcrypt.compareSync(input.password, response.password);
+          if (validator) {
+            // Generate JWT token if password matches
+            jwt.sign(
+              { email: input.email },
+              "Eco-Cup",
+              { expiresIn: "7d" },
+              (error, token) => {
+                if (error) {
+                  res.json({ status: "token creation failed", error: error.message });
                 } else {
-                    res.json({ "status": "wrong email or password" })
+                  res.json({ status: "success", token: token });
                 }
-            } else {
-                res.json({ "status": "user doesn't exist" })
-            }
+              }
+            );
+          } else {
+            res.json({ status: "wrong email or password" });
+          }
+        } else {
+          res.json({ status: "user doesn't exist" });
         }
-    ).catch()
-})
+      }
+    ).catch((error) => {
+      res.status(500).json({ status: "error", error: error.message });
+    });
+  });
 
 //User signup
 app.post("/userSignup", (req, res) => {
