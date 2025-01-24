@@ -56,35 +56,18 @@ app.post("/adminSignin", (req, res) => {
     ).catch()
 })
 
-//user signup
-app.post("/userSignup", async (req, res) => {
-    try {
-      const { name, email, password } = req.body;
-  
-      // Check if user already exists
-      const existingUser = await User.findOne({ email });
-      if (existingUser) {
-        return res.status(400).json({ message: "User already exists" });
-      }
-  
-      // Hash the password
-      const salt = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash(password, salt);
-  
-      // Create new user
-      const newUser = new User({
-        name,
-        email,
-        password: hashedPassword,
-      });
-  
-      // Save user to the database
-      await newUser.save();
-      res.status(201).json({ message: "User registered successfully" });
-    } catch (error) {
-      res.status(500).json({ message: "Internal Server Error", error: error.message });
-    }
-  });
+//User signup
+app.post("/userSignup", (req, res) => {
+    let input = req.body
+    let hashedpassword = bcrypt.hashSync(input.password, 10)
+    //console.log(hashedpassword)
+    input.password = hashedpassword
+    console.log(input)
+    let result = new userModel(input)
+    result.save()
+    res.json({ "status": "success" })
+
+})
   
   //user Signin
 app.post("/userSignin", async (req, res) => {
