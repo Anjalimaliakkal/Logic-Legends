@@ -110,23 +110,16 @@ app.post("/userSignin", async (req, res) => {
 
 //viewall users
 
-app.post("/viewusers", (req, res) => {
-    let token = req.headers["token"]
-    jwt.verify(token, "Eco-Cup", (error, decoded) => {
-        if (error) {
-            res.json({ "status": "unauthorized access" })
-        } else {
-            if (decoded) {
-                userModel.find().then(
-                    (response) => {
-                        res.json(response)
-                    }
-                ).catch()
-
-            }
-        }
-    })
-})
+app.get("/viewusers",(req,res)=>{
+    userModel.find().then(
+      (data)=>{
+          res.json(data)
+      }
+    ).catch((error)=>{
+  
+      res.json(error)
+    })  
+  })
 
 //add campaign
 app.post("/AddCampaign", (req, res) => {
@@ -151,6 +144,19 @@ app.post("/searchCampaign", (req, res) => {
     )
 })
 
+//view campaigns
+app.get("/viewcampaigns",(req,res)=>{
+    campaignModel.find().then(
+      (data)=>{
+          res.json(data)
+      }
+    ).catch((error)=>{
+  
+      res.json(error)
+    })  
+  })
+
+
 //add awareness ideas
 app.post("/AddAwarenessIdeas", (req, res) => {
     let input = req.body
@@ -160,18 +166,30 @@ app.post("/AddAwarenessIdeas", (req, res) => {
     res.json({ "status": "success" })
 })
 
-//viewall awareness ideas
+
+
+
+
+
 app.get("/ViewAllAwarenessIdeas", async (req, res) => {
     try {
         // Fetch all ideas from the database
         const ideas = await awarenessModel.find();
 
+        if (ideas.length === 0) {
+            return res.status(404).json({
+                message: "No awareness ideas found",
+            });
+        }
+
         // Respond with a success message and the fetched data
         res.status(200).json({
             message: "Awareness ideas retrieved successfully",
-            ideas: ideas,
+            ideas,
         });
     } catch (error) {
+        console.error("Error retrieving awareness ideas:", error);
+
         // Handle errors and respond with an appropriate message
         res.status(500).json({
             message: "An error occurred while retrieving awareness ideas",
@@ -179,6 +197,7 @@ app.get("/ViewAllAwarenessIdeas", async (req, res) => {
         });
     }
 });
+
 
 
 //add feedback
@@ -192,6 +211,8 @@ app.post("/AddFeedback", (req, res) => {
 
 //view feedback
 app.get("/viewfeedback",(req,res)=>{
+
+
     feedbackModel.find().then(
       (data)=>{
           res.json(data)

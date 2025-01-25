@@ -8,6 +8,6 @@ const awarenessSchema = new mongoose.Schema({
   status: { type: String, enum: ['pending', 'approved', 'rejected'], default: 'pending' },  // Idea status
 });
 
-const awarenessModel=mongoose.model("awarenessdata",awarenessSchema)
+const awarenessModel=mongoose.model("awareness",awarenessSchema)
 module.exports=awarenessModel
 
